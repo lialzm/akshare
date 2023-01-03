@@ -47,7 +47,7 @@ def fund_manager_fund_info_em(fund: str = "000009") -> pd.DataFrame:
             result.append(res_tr)
         row+=1
 
-    data = pd.DataFrame(result, columns=['起始期', '截止期','基金经理','基金经理id','任职期间','任职期间'])
+    data = pd.DataFrame(result, columns=['start_time', 'end_time','manager','manager_id','total_time','total_return'])
 
     return data
 
@@ -76,7 +76,8 @@ def fund_manager_det_fund_info_em(fund: str = "30532593") -> pd.DataFrame:
     profile = html.xpath('string(//div[@class="right ms"]/p)').replace(' ','').replace('\r\n','')
 
     result = {'name':name[0],'id':fund,'picture':picture[0],'total_time':total_time_res,'start_time':start_time_res,'profile':profile}
-    return result
+    data = pd.DataFrame([result], columns=['name', 'id','picture','total_time','start_time','profile'])
+    return data
 
 if __name__ == "__main__":
     fund_money_fund_info_em_df = fund_manager_fund_info_em(fund="000001")
