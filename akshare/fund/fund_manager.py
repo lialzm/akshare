@@ -57,7 +57,7 @@ def fund_manager(adjust: str = '0') -> pd.DataFrame:
     big_df["index"] = range(1, len(big_df) + 1)
     big_df.columns = [
         "序号",
-        "_",
+        "经理ID",
         "姓名",
         "_",
         "所属公司",
@@ -73,6 +73,7 @@ def fund_manager(adjust: str = '0') -> pd.DataFrame:
     big_df = big_df[
         [
             "序号",
+            "经理ID",
             "姓名",
             "所属公司",
             "现任基金",
