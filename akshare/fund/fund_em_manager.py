@@ -8,6 +8,10 @@ from akshare.utils import demjson
 import pandas as pd
 import requests
 from lxml import etree
+import datetime
+import time
+import pytz as pytz
+
 
 def fund_manager_fund_info_em(fund: str = "000009") -> pd.DataFrame:
     """
@@ -34,20 +38,25 @@ def fund_manager_fund_info_em(fund: str = "000009") -> pd.DataFrame:
         start_time = html.xpath('//table[@class="w782 comm  jloff"]/tbody/tr[{}]/td[1]/text()'.format(row))
         end_time = html.xpath('//table[@class="w782 comm  jloff"]/tbody/tr[{}]/td[2]/text()'.format(row))
         manager = html.xpath('//table[@class="w782 comm  jloff"]/tbody/tr[{}]/td[3]/a'.format(row))
-        time = html.xpath('//table[@class="w782 comm  jloff"]/tbody/tr[{}]/td[4]/text()'.format(row))
+        total_time = html.xpath('//table[@class="w782 comm  jloff"]/tbody/tr[{}]/td[4]/text()'.format(row))
         return_data = html.xpath('//table[@class="w782 comm  jloff"]/tbody/tr[{}]/td[5]/text()'.format(row))
+        tz = pytz.timezone('Asia/Shanghai')  # 东八区
+        t = datetime.datetime.fromtimestamp(int(time.time()), tz).strftime('%Y-%m-%d %H:%M:%S %z')
         for text in manager:
             res_tr = []
             res_tr.append(start_time[0])
             res_tr.append(end_time[0])
             res_tr.append(text.text)
-            res_tr.append(text.attrib['href'].replace('http://fund.eastmoney.com/manager/','').replace('.html',''))
-            res_tr.append(time[0])
+            res_tr.append(text.attrib['href'].replace('http://fund.eastmoney.com/manager/', '').replace('.html', ''))
+            res_tr.append(total_time[0])
             res_tr.append(return_data[0])
+            res_tr.append(t)
+            res_tr.append(t)
             result.append(res_tr)
-        row+=1
+        row += 1
 
-    data = pd.DataFrame(result, columns=['start_time', 'end_time','manager','manager_id','total_time','total_return'])
+    data = pd.DataFrame(result,columns=['start_time', 'end_time', 'manager', 'manager_id', 'total_time', 'total_return',
+                                 'dw_insert_time', 'dw_update_time'])
 
     return data
 
@@ -64,23 +73,25 @@ def fund_manager_det_fund_info_em(fund: str = "30532593") -> pd.DataFrame:
     html = etree.HTML(r.text)
     name = html.xpath('//h3[@id="name_1"]/text()')
     picture = html.xpath('//img[@id="photo"]/@src')
-    total_time = html.xpath('string(//div[@class="right jd "])').replace(' ','').replace('\r\n','')
+    total_time = html.xpath('string(//div[@class="right jd "])').replace(' ', '').replace('\r\n', '')
     total_time_start = total_time.index('累计任职时间：')
     total_time_end = total_time.index('任职起始日期：')
-    total_time_res = total_time[total_time_start:total_time_end].replace('累计任职时间：','')
-
+    total_time_res = total_time[total_time_start:total_time_end].replace('累计任职时间：', '')
     start_time_start = total_time.index('任职起始日期：')
     start_time_end = total_time.index('现任基金公司：')
-    start_time_res = total_time[start_time_start:start_time_end].replace('任职起始日期：','')
+    start_time_res = total_time[start_time_start:start_time_end].replace('任职起始日期：', '')
+    profile = html.xpath('string(//div[@class="right ms"]/p)').replace(' ', '').replace('\r\n', '')
 
-    profile = html.xpath('string(//div[@class="right ms"]/p)').replace(' ','').replace('\r\n','')
+    tz = pytz.timezone('Asia/Shanghai')  # 东八区
+    t = datetime.datetime.fromtimestamp(int(time.time()), tz).strftime('%Y-%m-%d %H:%M:%S %z')
 
-    result = {'name':name[0],'id':fund,'picture':picture[0],'total_time':total_time_res,'start_time':start_time_res,'profile':profile}
-    data = pd.DataFrame([result], columns=['name', 'id','picture','total_time','start_time','profile'])
+    result = {'name': name[0], 'id': fund, 'picture': picture[0], 'total_time': total_time_res,'start_time': start_time_res, 'profile': profile, 'dw_insert_time': t, 'dw_update_time': t}
+    data = pd.DataFrame([result], columns=['name', 'id', 'picture', 'total_time', 'start_time', 'profile', 'dw_insert_time', 'dw_update_time'])
     return data
+
 
 if __name__ == "__main__":
     fund_money_fund_info_em_df = fund_manager_fund_info_em(fund="000001")
     print(fund_money_fund_info_em_df)
-    fund_manager_det_fund_info_em = fund_manager_det_fund_info_em(fund="30532593")
-    print(fund_manager_det_fund_info_em)
+    # fund_manager_det_fund_info_em = fund_manager_det_fund_info_em(fund="30532593")
+    # print(fund_manager_det_fund_info_em)
