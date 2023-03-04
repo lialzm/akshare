@@ -1,19 +1,21 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 """
-Date: 2021/5/4 15:12
+Date: 2023/2/10 17:44
 Desc: 东方财富网-数据中心-研究报告-盈利预测
-http://data.eastmoney.com/report/profitforecast.jshtml
+https://data.eastmoney.com/report/profitforecast.jshtml
 """
 import pandas as pd
 import requests
 from tqdm import tqdm
 
 
-def stock_profit_forecast():
+def stock_profit_forecast(symbol: str = ""):
     """
     东方财富网-数据中心-研究报告-盈利预测
-    http://data.eastmoney.com/report/profitforecast.jshtml
+    https://data.eastmoney.com/report/profitforecast.jshtml
+    :param symbol: "", 默认为获取全部数据; symbol="船舶制造", 则获取具体行业板块的数据; 行业板块可以通过 ak.stock_board_industry_name_em() 接口获取
+    :type symbol: str
     :return: 盈利预测
     :rtype: pandas.DataFrame
     """
@@ -23,14 +25,14 @@ def stock_profit_forecast():
         'columns': 'WEB_RESPREDICT',
         'pageNumber': '1',
         'pageSize': '500',
-        'sortTypes': '-1',
-        'sortColumns': 'RATING_ORG_NUM',
         'p': '1',
         'pageNo': '1',
         'pageNum': '1',
         'filter': '',
-        '_': '1640241417037',
     }
+    if symbol:
+        params.update({'filter': f'(INDUSTRY_BOARD="{symbol}")'})
+
     r = requests.get(url, params=params)
     data_json = r.json()
     page_num = int(data_json['result']['pages'])
@@ -49,10 +51,11 @@ def stock_profit_forecast():
 
     big_df.reset_index(inplace=True)
     big_df["index"] = big_df.index + 1
-    year1 = list(set(big_df['YEAR1']))[-1]
-    year2 = list(set(big_df['YEAR2']))[-1]
-    year3 = list(set(big_df['YEAR3']))[-1]
-    year4 = list(set(big_df['YEAR4']))[0]
+
+    year1 = str(big_df['YEAR1'].mode().values[0])
+    year2 = str(big_df['YEAR2'].mode().values[0])
+    year3 = str(big_df['YEAR3'].mode().values[0])
+    year4 = str(big_df['YEAR4'].mode().values[0])
     big_df.columns = [
         "序号",
         "-",
@@ -105,19 +108,26 @@ def stock_profit_forecast():
             f"{year4}预测每股收益",
         ]
     ]
-    big_df['研报数'] = pd.to_numeric(big_df['研报数'])
-    big_df['机构投资评级(近六个月)-买入'] = pd.to_numeric(big_df['机构投资评级(近六个月)-买入'])
-    big_df['机构投资评级(近六个月)-增持'] = pd.to_numeric(big_df['机构投资评级(近六个月)-增持'])
-    big_df['机构投资评级(近六个月)-中性'] = pd.to_numeric(big_df['机构投资评级(近六个月)-中性'])
-    big_df['机构投资评级(近六个月)-减持'] = pd.to_numeric(big_df['机构投资评级(近六个月)-减持'])
-    big_df['机构投资评级(近六个月)-卖出'] = pd.to_numeric(big_df['机构投资评级(近六个月)-卖出'])
-    big_df[f"{year1}预测每股收益"] = pd.to_numeric(big_df[f"{year1}预测每股收益"])
-    big_df[f"{year2}预测每股收益"] = pd.to_numeric(big_df[f"{year2}预测每股收益"])
-    big_df[f"{year3}预测每股收益"] = pd.to_numeric(big_df[f"{year3}预测每股收益"])
-    big_df[f"{year4}预测每股收益"] = pd.to_numeric(big_df[f"{year4}预测每股收益"])
+    big_df['机构投资评级(近六个月)-买入'].fillna(0, inplace=True)
+    big_df['机构投资评级(近六个月)-增持'].fillna(0, inplace=True)
+    big_df['机构投资评级(近六个月)-中性'].fillna(0, inplace=True)
+    big_df['机构投资评级(近六个月)-减持'].fillna(0, inplace=True)
+    big_df['机构投资评级(近六个月)-卖出'].fillna(0, inplace=True)
+    big_df['研报数'] = pd.to_numeric(big_df['研报数'], errors="coerce")
+    big_df['机构投资评级(近六个月)-买入'] = pd.to_numeric(big_df['机构投资评级(近六个月)-买入'], errors="coerce")
+    big_df['机构投资评级(近六个月)-增持'] = pd.to_numeric(big_df['机构投资评级(近六个月)-增持'], errors="coerce")
+    big_df['机构投资评级(近六个月)-中性'] = pd.to_numeric(big_df['机构投资评级(近六个月)-中性'], errors="coerce")
+    big_df['机构投资评级(近六个月)-减持'] = pd.to_numeric(big_df['机构投资评级(近六个月)-减持'], errors="coerce")
+    big_df['机构投资评级(近六个月)-卖出'] = pd.to_numeric(big_df['机构投资评级(近六个月)-卖出'], errors="coerce")
+    big_df[f"{year1}预测每股收益"] = pd.to_numeric(big_df[f"{year1}预测每股收益"], errors="coerce")
+    big_df[f"{year2}预测每股收益"] = pd.to_numeric(big_df[f"{year2}预测每股收益"], errors="coerce")
+    big_df[f"{year3}预测每股收益"] = pd.to_numeric(big_df[f"{year3}预测每股收益"], errors="coerce")
+    big_df[f"{year4}预测每股收益"] = pd.to_numeric(big_df[f"{year4}预测每股收益"], errors="coerce")
+    big_df.sort_values(['研报数'], ascending=False, inplace=True, ignore_index=True)
+    big_df['序号'] = range(1, len(big_df)+1)
     return big_df
 
 
 if __name__ == "__main__":
-    stock_profit_forecast_df = stock_profit_forecast()
+    stock_profit_forecast_df = stock_profit_forecast(symbol="")
     print(stock_profit_forecast_df)
