@@ -35,7 +35,7 @@ def drewry_wci_index(symbol: str = "composite") -> pd.DataFrame:
     url = "https://infogram.com/world-container-index-1h17493095xl4zj"
     r = requests.get(url)
     soup = BeautifulSoup(r.text, "lxml")
-    data_text = soup.find_all("script")[-5].string.strip("window.infographicData=")[:-1]
+    data_text = soup.find_all("script")[-4].string.strip("window.infographicData=")[:-1]
     data_json = demjson.decode(data_text)
     temp_df = pd.DataFrame(data_json["elements"][2]["data"][symbol_map[symbol]])
     temp_df = temp_df.iloc[1:, :]
@@ -46,6 +46,7 @@ def drewry_wci_index(symbol: str = "composite") -> pd.DataFrame:
     temp_df["date"] = day + "-" + month + "-" + year
     temp_df["date"] = pd.to_datetime(temp_df["date"]).dt.date
     temp_df["wci"] = pd.to_numeric(temp_df["wci"], errors="coerce")
+    temp_df.reset_index(inplace=True, drop=True)
     return temp_df
 
 

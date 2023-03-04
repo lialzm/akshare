@@ -1,10 +1,10 @@
-# [AKShare](https://github.com/akfamily/akshare) 快速入门
+# [AKShare](https://github.com/akfamily/akshare/) 快速入门
 
 ## 查看数据
 
-具体函数使用详情, 请查看 [AKShare 文档](https://akshare.readthedocs.io/) 每个接口的示例代码
+具体函数使用详情, 请查看 [AKShare 文档](https://akshare.akfamily.xyz/) 每个接口的示例代码
 
-[AKShare](https://github.com/akfamily/akshare) 数据接口一览
+[AKShare](https://github.com/akfamily/akshare/) 数据接口一览
 
 ```
  # 交易所期货数据
@@ -81,8 +81,6 @@
  "get_finance_option"  # 提供上海证券交易所期权数据
  # 加密货币行情
  "crypto_js_spot"  # 提供主流加密货币行情数据接口
- # 股票-企业社会责任
- "stock_zh_a_scr_report"  # 企业社会责任数据
  # 美股-中国概念股行情和历史数据
  "stock_us_zh_spot"  # 中国概念股行情
  "stock_us_zh_daily"  # 中国概念股历史数据
@@ -388,6 +386,9 @@
  "bond_cb_index_jsl"  # 可转债-集思录可转债等权指数
  "bond_cb_redeem_jsl"  # 可转债-集思录可转债-强赎
  # 金融期权-新浪
+ "option_cffex_sz50_list_sina"  # 上证50期权列表
+  "option_cffex_sz50_spot_sina"  # 沪深300期权实时行情
+ "option_cffex_sz50_daily_sina"  # 沪深300期权历史行情-日频
  "option_cffex_hs300_list_sina"  # 沪深300期权列表
  "option_cffex_hs300_spot_sina"  # 沪深300期权实时行情
  "option_cffex_hs300_daily_sina"  # 沪深300期权历史行情-日频
@@ -514,7 +515,7 @@
  "stock_info_bj_name_code"  # 北京证券交易所股票代码和简称
  "stock_info_sh_delist"  # 上海证券交易所暂停和终止上市
  "stock_info_sz_delist"  # 深证证券交易所暂停和终止上市
- "stock_info_sz_change_name"  # 深证证券交易所股票曾用名详情
+ "stock_info_sz_change_name"  # 深证证券交易所名称变更
  "stock_info_change_name"  # A 股股票曾用名列表
  "stock_info_a_code_name"  # A 股股票代码和简称
  # 机构持股
@@ -539,7 +540,10 @@
  # A 股市盈率和市净率
  "stock_a_pb"  # A 股市净率
  "stock_a_pe"  # A 股市盈率
- "stock_a_pe_and_pb"  # A 股市盈率和市净率
+ "stock_market_pe_lg"  # 乐咕乐股-主板市盈率
+ "stock_index_pe_lg"  # 乐咕乐股-指数市盈率
+ "stock_market_pb_lg"  # 乐咕乐股-主板市净率
+ "stock_index_pb_lg"  # 乐咕乐股-指数市净率
  "stock_a_lg_indicator"  # A 股个股市盈率、市净率和股息率指标
  "stock_hk_eniu_indicator"  # 港股股个股市盈率、市净率和股息率指标
  "stock_a_high_low_statistics"  # 创新高和新低的股票数量
@@ -547,8 +551,11 @@
  # 交易日历
  "tool_trade_date_hist"  # 新浪财经-交易日历
  # 基金行情
- "fund_etf_category_sina"  # 基金列表
- "fund_etf_hist_sina"  # 基金行情
+ "fund_etf_category_sina"  # 基金实时行情-新浪
+ "fund_etf_hist_sina"  # 基金行情-新浪
+ "fund_etf_hist_em"  # 基金历史行情-东财
+ "fund_etf_hist_min_em"  # 基金分时行情-东财
+ "fund_etf_spot_em"  # 基金实时行情-东财
  # 股票财务报告-预约披露
  "stock_report_disclosure"  # 股票财务报告-预约披露时间
  # 基金持股
@@ -645,8 +652,6 @@
  "stock_zh_kcb_report_em"  # 科创板报告
  # 东方财富-期权
  "option_current_em"  # 东方财富-期权
- # 金十数据-新闻资讯
- "js_news"  # 金十数据-新闻资讯
  # 国证指数
  "index_all_cni"  # 国证指数-所有指数
  "index_hist_cni"  # 国证指数-指数行情
@@ -1111,7 +1116,8 @@
  # 人民币汇率中间价
  "currency_boc_safe"  # 人民币汇率中间价
  # 主营构成
- "stock_zygc_ym"  # 主营构成
+ "stock_zygc_ym"  # 主营构成-益盟
+ "stock_zygc_em"  # 主营构成-东财
  # 管理层讨论与分析
  "stock_mda_ym"  # 管理层讨论与分析
  # 行业分类数据
@@ -1186,6 +1192,7 @@
  "fund_stock_position_lg"  # 乐咕乐股-基金仓位-股票型基金仓位
  "fund_balance_position_lg"  # 乐咕乐股-基金仓位-平衡混合型基金仓位
  "fund_linghuo_position_lg"  # 乐咕乐股-基金仓位-灵活配置型基金仓位
+ "stock_zyjs_ths"  # 主营介绍
 ```
 
 ## 案例演示
